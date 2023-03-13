@@ -5,6 +5,10 @@ from logging import Logger
 import sys
 import os
 from pyodbc import connect, Connection
+from dotenv import load_dotenv
+import warnings
+
+warnings.filterwarnings("ignore")
 
 currentFolder = os.path.dirname(__file__)
 folderSrc = os.path.join(currentFolder, "..")
@@ -12,6 +16,8 @@ folderBeforeSrc = os.path.join(currentFolder, "..", "..")
 sys.path.append(currentFolder)
 sys.path.append(folderSrc)
 sys.path.append(folderBeforeSrc)
+
+load_dotenv()
 
 user = os.environ.get("USER_CONNECT_DATABASE")
 password = os.environ.get("PASSWORD_CONNECT_DATABASE")

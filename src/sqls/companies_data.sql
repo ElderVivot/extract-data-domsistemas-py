@@ -1,19 +1,17 @@
-SELECT subDataFetch.codeCompanieAccountSystem,
+SELECT STRING(subDataFetch.codeCompanieAccountSystem) AS codeCompanieAccountSystem,
        subDataFetch.federalRegistration,
-       subDataFetch.name,
-       MAX(subDataFetch.markedFolhaModule) AS markedFolhaModule,
-       MAX(subDataFetch.existParameterFolha) AS existParameterFolha,
-       MAX(subDataFetch.markedFolhaParameterToSendEsocial) AS markedFolhaParameterToSendEsocial,
+       STRING(MAX(subDataFetch.markedFolhaModule)) AS markedFolhaModule,
+       STRING(MAX(subDataFetch.existParameterFolha)) AS existParameterFolha,
+       STRING(MAX(subDataFetch.markedFolhaParameterToSendEsocial)) AS markedFolhaParameterToSendEsocial,
        SUM(subDataFetch.qtdEmployeesActive) AS qtdEmployeesActive,
        SUM(subDataFetch.qtdContribuintesActive) AS qtdContribuintesActive,
        SUM(subDataFetch.qtdContribuintesTypeEmpregadorActive) AS qtdContribuintesTypeEmpregadorActive,
        SUM(subDataFetch.qtdEventsS1000) AS qtdEventsS1000,
-       COALESCE(MAX(subDataFetch.lastDateEmployeeResignation), '') AS lastDateEmployeeResignation,
-       COALESCE(MAX(subDataFetch.lastDateContribuinteResignation), '') AS lastDateContribuinteResignation
+       MAX(subDataFetch.lastDateEmployeeResignation) AS lastDateEmployeeResignation,
+       MAX(subDataFetch.lastDateContribuinteResignation) AS lastDateContribuinteResignation
 
   FROM (
-        SELECT  emp.codi_emp AS codeCompanieAccountSystem, COALESCE(TRIM(emp.cgce_emp), '') AS federalRegistration, 
-                emp.nome_emp AS name, emp.ufol_emp AS markedFolhaModule,
+        SELECT  emp.codi_emp AS codeCompanieAccountSystem, COALESCE(TRIM(emp.cgce_emp), '') AS federalRegistration, emp.ufol_emp AS markedFolhaModule,
                 CASE WHEN parmto.codi_emp IS NOT NULL THEN 1 ELSE 0 END AS existParameterFolha,
                 CASE WHEN parmto.enviar_dados_esocial IS NOT NULL THEN parmto.enviar_dados_esocial ELSE 0 END AS markedFolhaParameterToSendEsocial,
                 0 AS qtdEmployeesActive,
@@ -27,12 +25,11 @@ SELECT subDataFetch.codeCompanieAccountSystem,
                 LEFT JOIN bethadba.foparmto AS parmto
                     ON    parmto.codi_emp = emp.codi_emp
                     
-            WHERE emp.codi_emp = 10 --'#codi_emp'
+            WHERE emp.codi_emp = '#codi_emp#'
 
         UNION ALL 
 
-        SELECT  emp.codi_emp AS codeCompanieAccountSystem, COALESCE(TRIM(emp.cgce_emp), '') AS federalRegistration, 
-                emp.nome_emp AS name, emp.ufol_emp AS markedFolhaModule,
+        SELECT  emp.codi_emp AS codeCompanieAccountSystem, COALESCE(TRIM(emp.cgce_emp), '') AS federalRegistration, emp.ufol_emp AS markedFolhaModule,
                 0 AS existParameterFolha,
                 0 AS markedFolhaParameterToSendEsocial,
                 SUM(CASE WHEN fun.tipo_epr = 1 AND res.demissao IS NULL THEN 1 ELSE 0 END) AS qtdEmployeesActive,
@@ -54,14 +51,13 @@ SELECT subDataFetch.codeCompanieAccountSystem,
                           AND afa.i_empregados = fun.i_empregados
                           AND afa.i_afastamentos = 8
                   
-          WHERE emp.codi_emp = 10 --'#codi_emp'
+          WHERE emp.codi_emp = '#codi_emp#'
 
-          GROUP BY codeCompanieAccountSystem, federalRegistration, name, markedFolhaModule, existParameterFolha, markedFolhaParameterToSendEsocial, qtdEventsS1000
+          GROUP BY codeCompanieAccountSystem, federalRegistration, markedFolhaModule, existParameterFolha, markedFolhaParameterToSendEsocial, qtdEventsS1000
 
           UNION ALL
 
-          SELECT  emp.codi_emp AS codeCompanieAccountSystem, COALESCE(TRIM(emp.cgce_emp), '') AS federalRegistration, 
-              emp.nome_emp AS name, emp.ufol_emp AS markedFolhaModule,
+          SELECT  emp.codi_emp AS codeCompanieAccountSystem, COALESCE(TRIM(emp.cgce_emp), '') AS federalRegistration, emp.ufol_emp AS markedFolhaModule,
               0 AS existParameterFolha,
               0 AS markedFolhaParameterToSendEsocial,
               0 AS qtdEmployeesActive,
@@ -78,7 +74,7 @@ SELECT subDataFetch.codeCompanieAccountSystem,
                       AND esocial.tipo_envio in (1,2,4) /* nao eh exclusao */            
                       AND esocial.validado = 1
                   
-          WHERE emp.codi_emp = 10 --'#codi_emp'
+          WHERE emp.codi_emp = '#codi_emp#'
             AND NOT EXISTS ( SELECT 1
                               FROM bethadba.foesocial_dados_eventos AS esocial2
                               WHERE esocial2.codi_emp = esocial.codi_emp
@@ -87,8 +83,8 @@ SELECT subDataFetch.codeCompanieAccountSystem,
                                   AND esocial2.i_evento_esocial_excluido = esocial.i_evento_esocial
                                   AND esocial2.numero_recibo_excluido = esocial.numero_recibo )
 
-          GROUP BY codeCompanieAccountSystem, federalRegistration, name, markedFolhaModule, existParameterFolha, markedFolhaParameterToSendEsocial,
+          GROUP BY codeCompanieAccountSystem, federalRegistration, markedFolhaModule, existParameterFolha, markedFolhaParameterToSendEsocial,
                     qtdEmployeesActive, qtdContribuintesActive, qtdContribuintesActiveTypeEmpregador, lastDateEmployeeResignation, lastDateContribuinteResignation
       ) AS subDataFetch
 
-GROUP BY codeCompanieAccountSystem, federalRegistration, name
+GROUP BY codeCompanieAccountSystem, federalRegistration

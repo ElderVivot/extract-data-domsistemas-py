@@ -15,6 +15,7 @@ sys.path.append(folderSrc)
 sys.path.append(folderBeforeSrc)
 
 from extrator.companies import CompaniesExtract
+from extrator.companies_data import CompaniesDataExtract
 
 load_dotenv()
 
@@ -36,12 +37,18 @@ class Config:
 
 
 def executeWhenStartServer():
+    # CompaniesExtract(logger).executeJobAsync()
+    CompaniesDataExtract(logger).executeJobAsync()
+
+
+@scheduler.task(trigger="cron", hour="*/3", minute="0", id="companies")
+def saveCompanies():
     CompaniesExtract(logger).executeJobAsync()
 
 
-@scheduler.task(trigger="cron", hour="*/3", minute="0", id="esocial_save_database_to_process")
-def esocialSaveInDatabaseToProcess():
-    CompaniesExtract(logger).executeJobAsync()
+@scheduler.task(trigger="cron", hour="*/3", minute="0", id="companies_data")
+def saveCompaniesData():
+    CompaniesDataExtract(logger).executeJobAsync()
 
 
 if __name__ == "__main__":

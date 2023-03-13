@@ -15,12 +15,12 @@ async def post(session: ClientSession, url: str, data: Any, headers: Dict[str, s
 
 
 async def put(session: ClientSession, url: str, data: Any, headers: Dict[str, str]):
-    async with session.put(url, data=data, headers=headers) as response:
+    async with session.put(url, json=data, headers=headers) as response:
         data = await response.json()
         return data, response.status
 
 
 async def patch(session: ClientSession, url: str, data: Dict[str, str], headers: Dict[str, str]):
-    async with session.patch(url, data=data, headers=headers) as response:
+    async with session.patch(url, json=data, headers=headers) as response:
         data = await response.json()
         return data, response.status
