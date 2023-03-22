@@ -2,13 +2,14 @@ from __future__ import annotations
 
 
 def correlationTypeCgce(typeCgce: str):
-    if typeCgce == "1":
+    typeCgceInt = int(typeCgce)
+    if typeCgceInt == 1:
         return "cnpj"
-    elif typeCgce == "2":
+    elif typeCgceInt == 2:
         return "cpf"
-    elif typeCgce == "3":
+    elif typeCgceInt == 3:
         return "cei"
-    elif typeCgce == "6":
+    elif typeCgceInt == 6:
         return "caepf"
     else:
         return "cnpj"
@@ -24,11 +25,12 @@ def correlationStatus(status: str):
 
 
 def correlationTaxRegime(taxRegime: str):
-    if taxRegime == "2" or taxRegime == "4":
+    taxRegimeInt = int(taxRegime)
+    if taxRegimeInt == 2 or taxRegimeInt == 4:
         return "01"
-    elif taxRegime == "5":
+    elif taxRegimeInt == 5:
         return "02"
-    elif taxRegime == "1":
+    elif taxRegimeInt == 1:
         return "03"
     else:
         return "99"

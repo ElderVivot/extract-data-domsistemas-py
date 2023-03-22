@@ -16,7 +16,8 @@ sys.path.append(folderBeforeSrc)
 
 from extrator.companies import CompaniesExtract
 from extrator.companies_data import CompaniesDataExtract
-from extrator.companies_data_monthly import CompaniesDataMonthlyExtract
+
+# from extrator.companies_data_monthly import CompaniesDataMonthlyExtract
 
 load_dotenv()
 
@@ -38,9 +39,9 @@ class Config:
 
 
 def executeWhenStartServer():
-    # CompaniesExtract(logger).executeJobAsync()
-    # CompaniesDataExtract(logger).executeJobAsync()
-    CompaniesDataMonthlyExtract(logger).executeJobAsync()
+    CompaniesExtract(logger).executeJobAsync()
+    CompaniesDataExtract(logger).executeJobAsync()
+    # CompaniesDataMonthlyExtract(logger).executeJobAsync()
 
 
 @scheduler.task(trigger="cron", hour="*/3", minute="0", id="companies")
@@ -53,9 +54,9 @@ def saveCompaniesData():
     CompaniesDataExtract(logger).executeJobAsync()
 
 
-@scheduler.task(trigger="cron", hour="*", minute="*/20", id="companies_data_monthly")
-def saveCompaniesDataMonthly():
-    CompaniesDataMonthlyExtract(logger).executeJobAsync()
+# @scheduler.task(trigger="cron", hour="*", minute="*/20", id="companies_data_monthly")
+# def saveCompaniesDataMonthly():
+#     CompaniesDataMonthlyExtract(logger).executeJobAsync()
 
 
 if __name__ == "__main__":
