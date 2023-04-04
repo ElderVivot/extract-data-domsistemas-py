@@ -17,6 +17,7 @@ TENANT = os.environ.get("TENANT")
 
 from common.exceptions.requests import RequestException
 from common.adapters.requests import post
+from common.utils.functions import correlationTaxRegime
 
 
 class SendApiCompaniesDataMonthly:
@@ -24,6 +25,7 @@ class SendApiCompaniesDataMonthly:
         self.__data: Dict[str, Any] = {}
 
     def __mountData(self) -> Dict[str, Any]:
+        self.__data["taxRegime"] = correlationTaxRegime(self.__data["taxRegime"])
         return self.__data
 
     async def __putData(self):
