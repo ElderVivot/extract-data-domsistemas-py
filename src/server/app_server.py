@@ -16,10 +16,11 @@ sys.path.append(folderBeforeSrc)
 
 from extrator.companies import CompaniesExtract
 from extrator.companies_data import CompaniesDataExtract
-
-# from extrator.companies_data_monthly import CompaniesDataMonthlyExtract
+from extrator.companies_data_monthly import CompaniesDataMonthlyExtract
 
 load_dotenv()
+
+SQLS_TO_EXECUTE = str(os.environ.get("SQLS_TO_EXECUTE")).split(",")
 
 logger = logging.getLogger()
 handler = logging.StreamHandler()
@@ -41,7 +42,7 @@ class Config:
 def executeWhenStartServer():
     CompaniesExtract(logger).executeJobAsync()
     CompaniesDataExtract(logger).executeJobAsync()
-    # CompaniesDataMonthlyExtract(logger).executeJobAsync()
+    CompaniesDataMonthlyExtract(logger).executeJobAsync()
 
 
 @scheduler.task(trigger="cron", hour="*/3", minute="0", id="companies")
@@ -51,12 +52,14 @@ def saveCompanies():
 
 @scheduler.task(trigger="cron", hour="*/3", minute="0", id="companies_data")
 def saveCompaniesData():
-    CompaniesDataExtract(logger).executeJobAsync()
+    if len(SQLS_TO_EXECUTE) > 0 and SQLS_TO_EXECUTE.count("companies_data") > 0:
+        CompaniesDataExtract(logger).executeJobAsync()
 
 
-# @scheduler.task(trigger="cron", hour="*", minute="*/20", id="companies_data_monthly")
-# def saveCompaniesDataMonthly():
-#     CompaniesDataMonthlyExtract(logger).executeJobAsync()
+@scheduler.task(trigger="cron", hour="*/8", minute="0", id="companies_data_monthly")
+def saveCompaniesDataMonthly():
+    if len(SQLS_TO_EXECUTE) > 0 and SQLS_TO_EXECUTE.count("companies_data_monthly") > 0:
+        CompaniesDataMonthlyExtract(logger).executeJobAsync()
 
 
 if __name__ == "__main__":
