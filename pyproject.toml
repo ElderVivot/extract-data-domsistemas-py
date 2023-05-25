@@ -11,9 +11,8 @@ python = "^3.9"
 pyodbc = "^4.0.35"
 pandas = "^1.5.3"
 python-dotenv = "^1.0.0"
-flask = "^2.2.3"
-flask-apscheduler = "^1.12.4"
 aiohttp = "^3.8.4"
+rocketry = "^2.5.1"
 
 
 [tool.poetry.group.dev.dependencies]
