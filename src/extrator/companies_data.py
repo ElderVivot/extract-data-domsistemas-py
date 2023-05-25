@@ -6,7 +6,7 @@ import os
 import sys
 import pandas as pd
 import json
-import asyncio
+# import asyncio
 
 currentFolder = os.path.dirname(__file__)
 folderSrc = os.path.join(currentFolder, "..")
@@ -31,7 +31,7 @@ class CompaniesDataExtract:
 
         self.__sendToApi = SendApiCompaniesData()
 
-    async def __main(self):
+    async def processAsync(self):
         try:
             sqlGeempre = "SELECT codi_emp AS codiEmp, nome_emp AS nameEmp, cgce_emp AS federalRegistration FROM bethadba.geempre WHERE codi_emp <> 0 ORDER BY 1"
             dfGeempre = pd.read_sql_query(sqlGeempre, self.__connection)
@@ -55,12 +55,12 @@ class CompaniesDataExtract:
         finally:
             self.__connectionDB.closeConnection()
 
-    def executeJobAsync(self):
-        try:
-            asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-            asyncio.run(self.__main())
-        except Exception as e:
-            print(e)
+    # def executeJobAsync(self):
+    #     try:
+    #         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    #         asyncio.run(self.__main())
+    #     except Exception as e:
+    #         print(e)
 
 
 # if __name__ == "__main__":

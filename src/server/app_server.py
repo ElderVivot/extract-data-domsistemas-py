@@ -33,22 +33,22 @@ appRocketry = Rocketry()
 
 
 @appRocketry.task('every 3 hours', name="companies", execution="async")
-def saveCompanies():
-    CompaniesExtract(logger).executeJobAsync()
+async def saveCompanies():
+    await CompaniesExtract(logger).processAsyn()
 
 
 @appRocketry.task('every 3 hours', name="companies_data", execution="async")
-def saveCompaniesData():
+async def saveCompaniesData():
     logger.info('Start saveCompaniesData')
     if len(SQLS_TO_EXECUTE) > 0 and SQLS_TO_EXECUTE.count("companies_data") > 0:
-        CompaniesDataExtract(logger).executeJobAsync()
+        await CompaniesDataExtract(logger).processAsync()
 
 
 @appRocketry.task('every 8 hours', name="companies_data_monthly", execution="async")
-def saveCompaniesDataMonthly():
+async def saveCompaniesDataMonthly():
     logger.info('Start saveCompaniesDataMonthly')
     if len(SQLS_TO_EXECUTE) > 0 and SQLS_TO_EXECUTE.count("companies_data_monthly") > 0:
-        CompaniesDataMonthlyExtract(logger).executeJobAsync()
+        await CompaniesDataMonthlyExtract(logger).processAsync()
 
 
 if __name__ == "__main__":
