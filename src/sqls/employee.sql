@@ -22,7 +22,7 @@ SELECT STRING(subDataFetch.codeCompanieAccountSystem) AS codeCompanieAccountSyst
               ON    res.codi_emp = fun.codi_emp 
                 AND res.i_empregados = fun.i_empregados 
 
-    WHERE fun.codi_emp = '#codi_emp'
+    WHERE fun.codi_emp = '#codi_emp#'
       and ( res.demissao is null or res.demissao > date('2023-01-15'))
       
       
@@ -56,7 +56,7 @@ SELECT STRING(subDataFetch.codeCompanieAccountSystem) AS codeCompanieAccountSyst
 	                                    AND ede2.i_evento_esocial_excluido = ede.i_evento_esocial
 	                                    AND ede2.numero_recibo_excluido = ede.numero_recibo )
 
-    WHERE mst.codi_emp = '#codi_emp'
+    WHERE mst.codi_emp = '#codi_emp#'
       and ( res.demissao is null or res.demissao > date('2023-01-15'))
 
   ) AS subDataFetch
