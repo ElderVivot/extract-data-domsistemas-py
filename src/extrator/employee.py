@@ -41,14 +41,14 @@ class EmployeeExtract:
                 try:
                     sql = readSql(os.path.join(folderSrc, "sqls"), "employee.sql", {"codi_emp": str(companie["codiEmp"])})
                     df = pd.read_sql_query(sql, self.__connection)
-                    companieData = json.loads(df.to_json(orient="records", date_format="iso"))[0]
+                    resultFetch = json.loads(df.to_json(orient="records", date_format="iso"))
 
                     await self.__sendToApi.main({
-                        "codeCompanieAccountSystem": companie['codiEmp'],
-                        "dataList": companieData
+                        "codeCompanieAccountSystem": str(companie['codiEmp']),
+                        "dataList": resultFetch
                     })
 
-                    self.__logger.info(f'Save success employee {companie["codiEmp"]} - {companie["nameEmp"]} - {companie["federalRegistration"]} - qtd {len(companieData)}')
+                    self.__logger.info(f'Save success employee {companie["codiEmp"]} - {companie["nameEmp"]} - {companie["federalRegistration"]} - qtd {len(resultFetch)}')
                 except RequestException as e:
                     self.__logger.error("RequestException", e)
                 except Exception as e:
