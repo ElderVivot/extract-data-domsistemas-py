@@ -16,6 +16,7 @@ sys.path.append(folderBeforeSrc)
 from extrator.companies import CompaniesExtract
 from extrator.companies_data import CompaniesDataExtract
 from extrator.companies_data_monthly import CompaniesDataMonthlyExtract
+from extrator.employee import EmployeeExtract
 
 load_dotenv()
 
@@ -49,6 +50,13 @@ async def saveCompaniesDataMonthly():
     logger.info('Start saveCompaniesDataMonthly')
     if len(SQLS_TO_EXECUTE) > 0 and SQLS_TO_EXECUTE.count("companies_data_monthly") > 0:
         await CompaniesDataMonthlyExtract(logger).processAsync()
+
+
+@appRocketry.task('daily between 19:00 and 00:00', name="employee", execution="async")
+async def saveEmployee():
+    logger.info('Start saveEmployee')
+    if len(SQLS_TO_EXECUTE) > 0 and SQLS_TO_EXECUTE.count("employee") > 0:
+        await EmployeeExtract(logger).processAsync()
 
 
 if __name__ == "__main__":

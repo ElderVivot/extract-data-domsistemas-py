@@ -22,7 +22,7 @@ from services.send_api_employee import SendApiEmployee
 from common.exceptions.requests import RequestException
 
 
-class CompaniesDataExtract:
+class EmployeeExtract:
     def __init__(self, logger: Logger):
         self.__logger = logger
 
