@@ -2,6 +2,8 @@ SELECT STRING(subDataFetch.codeCompanieAccountSystem) AS codeCompanieAccountSyst
        STRING(subDataFetch.codeEmployee) AS codeEmployee,
        MAX(subDataFetch.name) AS name,
        DATEFORMAT(MAX(subDataFetch.admission), 'YYYY-MM-DD') AS admission,
+       MAX(string(subDataFetch.cpf)) AS cpf,
+       MAX(string(subDataFetch.matriculaEsocial)) AS matriculaEsocial,
        MAX(string(subDataFetch.codeRole)) AS codeRole,
        MAX(subDataFetch.nameRole) AS nameRole,
        DATEFORMAT(MAX(subDataFetch.resignation), 'YYYY-MM-DD') AS resignation,
@@ -11,7 +13,7 @@ SELECT STRING(subDataFetch.codeCompanieAccountSystem) AS codeCompanieAccountSyst
 
   FROM (
 
-    SELECT fun.codi_emp AS codeCompanieAccountSystem, fun.i_empregados AS codeEmployee, fun.nome AS name, fun.admissao AS admission,
+    SELECT fun.codi_emp AS codeCompanieAccountSystem, fun.i_empregados AS codeEmployee, fun.nome AS name, fun.admissao AS admission, fun.cpf AS cpf, fun.codigo_esocial AS matriculaEsocial,
           fun.i_cargos AS codeRole, cargo.nome AS nameRole, res.demissao AS resignation, fun.tipo_epr AS typeEmployee, fun.vinculo, 0 AS hasHealthMonitoring
 
       FROM bethadba.foempregados AS fun
@@ -28,7 +30,7 @@ SELECT STRING(subDataFetch.codeCompanieAccountSystem) AS codeCompanieAccountSyst
       
     UNION ALL 
     
-    SELECT mst.codi_emp AS codeCompanieAccountSystem, mst.i_empregados AS codeEmployee, '' AS name, null AS admission,
+    SELECT mst.codi_emp AS codeCompanieAccountSystem, mst.i_empregados AS codeEmployee, '' AS name, null AS admission, '' AS cpf, '' AS matriculaEsocial,
           0 AS codeRole, '' AS nameRole, null AS resignation, null as typeEmployee, null as vinculo, 1 AS hasHealthMonitoring
 
       FROM bethadba.FOMONITORAMENTO_SAUDE_TRABALHADOR AS mst
