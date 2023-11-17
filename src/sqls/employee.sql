@@ -13,7 +13,8 @@ SELECT STRING(subDataFetch.codeCompanieAccountSystem) AS codeCompanieAccountSyst
 
   FROM (
 
-    SELECT fun.codi_emp AS codeCompanieAccountSystem, fun.i_empregados AS codeEmployee, fun.nome AS name, fun.admissao AS admission, fun.cpf AS cpf, fun.codigo_esocial AS matriculaEsocial,
+    SELECT fun.codi_emp AS codeCompanieAccountSystem, fun.i_empregados AS codeEmployee, fun.nome AS name, fun.admissao AS admission, fun.cpf AS cpf, 
+           CASE WHEN fun.codigo_esocial IS NULL THEN '' ELSE fun.codigo_esocial END AS matriculaEsocial,
           fun.i_cargos AS codeRole, cargo.nome AS nameRole, res.demissao AS resignation, fun.tipo_epr AS typeEmployee, fun.vinculo, 0 AS hasHealthMonitoring
 
       FROM bethadba.foempregados AS fun
