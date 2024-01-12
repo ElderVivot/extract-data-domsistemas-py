@@ -43,8 +43,8 @@ class CompaniesExtract:
 
             for companie in companies:
                 try:
-                    companie['cityRegistration'] = treatAsNumber(companie['cityRegistration'])
-                    companie['stateRegistration'] = treatAsNumber(companie['stateRegistration'])
+                    companie['cityRegistration'] = str(treatAsNumber(companie['cityRegistration']))
+                    companie['stateRegistration'] = str(treatAsNumber(companie['stateRegistration']))
                     await self.__sendApiCompanies.main(companie)
                     self.__logger.info(f'Save success {companie["codeCompanieAccountSystem"]} - {companie["name"]} - {companie["federalRegistration"]}')
                 except RequestException as e:
