@@ -1,4 +1,5 @@
 from __future__ import annotations
+import re
 
 
 def correlationTypeCgce(typeCgce: str):
@@ -40,6 +41,10 @@ def convertToNumber(data: str | None):
     if data is None:
         return 0
     return int(data)
+
+
+def treatAsNumber(data: str | None):
+    return re.sub('[^0-9]', '', data)
 
 
 def convertToString(data: str | None):
