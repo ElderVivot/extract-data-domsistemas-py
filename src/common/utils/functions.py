@@ -43,7 +43,7 @@ def convertToNumber(data: str | None):
     return int(data)
 
 
-def treatAsNumber(data: str | None, isInt=False):
+def treatAsNumber(value: str | None, isInt=False):
     if type(value) == int:
         return value
     try:
