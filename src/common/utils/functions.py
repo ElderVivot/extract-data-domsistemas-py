@@ -48,7 +48,7 @@ def treatAsNumber(value: str | None, isInt=False):
         return value
     try:
         value = re.sub("[^0-9]", '', value)
-        if value == "":
+        if value == "" and isInt is True:
             return 0
         else:
             if isInt is True:
