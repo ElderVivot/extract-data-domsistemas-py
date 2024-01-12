@@ -43,8 +43,15 @@ def convertToNumber(data: str | None):
     return int(data)
 
 
-def treatAsNumber(data: str | None):
-    return re.sub('[^0-9]', '', data)
+def treatAsNumber(data: str | None, isInt=False):
+    valueReturn = ''
+    if data is None:
+        valueReturn = ''
+
+    valueReturn = re.sub('[^0-9]', '', data)
+    if isInt is True:
+        return int(valueReturn)
+    return valueReturn
 
 
 def convertToString(data: str | None):
