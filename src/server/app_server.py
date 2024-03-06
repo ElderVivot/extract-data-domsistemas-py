@@ -17,6 +17,7 @@ from extrator.companies import CompaniesExtract
 from extrator.companies_data import CompaniesDataExtract
 from extrator.companies_data_monthly import CompaniesDataMonthlyExtract
 from extrator.employee import EmployeeExtract
+from extrator.aliquot_effective import AliquotEffectiveExtract
 
 load_dotenv()
 
@@ -57,6 +58,13 @@ async def saveEmployee():
     logger.info('Start saveEmployee')
     if len(SQLS_TO_EXECUTE) > 0 and SQLS_TO_EXECUTE.count("employee") > 0:
         await EmployeeExtract(logger).processAsync()
+
+
+@appRocketry.task('daily between 19:00 and 00:00', name="aliquot_effective", execution="async")
+async def saveAliquotEffective():
+    logger.info('Start saveAliquotEffective')
+    if len(SQLS_TO_EXECUTE) > 0 and SQLS_TO_EXECUTE.count("aliquot_effective") > 0:
+        await AliquotEffectiveExtract(logger).processAsync()
 
 
 if __name__ == "__main__":

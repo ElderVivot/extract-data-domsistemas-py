@@ -2,13 +2,13 @@ SELECT emp.codi_emp,
        emp.nome_emp,
        emp.cgce_emp,
        
-       sn.anexo,
+       anexo = CASE WHEN sn.anexo IN (3,4,5) AND sn.vicms > 0 THEN 1 ELSE anexo END,
 
        /* iss */
        sn.biss AS base_iss,
        sn.viss AS valor_iss, 
        aliquota_iss_normal = round(sn.viss / CASE WHEN sn.biss > 0 THEN sn.biss ELSE 1 END * 100, 2),
-       aliquota_iss_retido = CASE WHEN sn.anexo IN (3,4,5) THEN round(sn.aliquota_efetiva_calculada - sn.aliquotan, 2) ELSE 0 END,
+       aliquota_iss_retido = CASE WHEN sn.anexo IN (3,4,5) AND sn.vicms = 0 THEN round(sn.aliquota_efetiva_calculada - sn.aliquotan, 2) ELSE 0 END,
        aliquota_iss = CASE WHEN aliquota_iss_normal > 0 THEN aliquota_iss_normal ELSE aliquota_iss_retido END,
        aliq_tot = sn.aliquota_efetiva_calculada,
 

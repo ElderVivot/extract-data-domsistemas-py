@@ -26,11 +26,11 @@ class SendApiAliquotEffective:
     def __mountData(self) -> Dict[str, Any]:
         return self.__data
 
-    async def __putData(self):
+    async def __postData(self):
         async with ClientSession() as session:
             response, statusCode = await post(
                 session,
-                f"{API_HOST}/companies_data",
+                f"{API_HOST}/aliquot_effective",
                 data=json.loads(json.dumps(self.__data)),
                 headers={"tenant": TENANT},
             )
@@ -42,4 +42,4 @@ class SendApiAliquotEffective:
         self.__data.clear()
         self.__data = data
         self.__data = self.__mountData()
-        await self.__putData()
+        await self.__postData()
