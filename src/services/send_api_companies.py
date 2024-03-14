@@ -17,7 +17,7 @@ TENANT = os.environ.get("TENANT")
 
 from common.exceptions.requests import RequestException
 from common.adapters.requests import post
-from common.utils.functions import correlationStatus, correlationTaxRegime, correlationTypeCgce, convertToNumber
+from common.utils.functions import correlationStatus, correlationTaxRegime, correlationTypeCgce, treatAsNumber
 
 
 class SendApiCompanies:
@@ -30,8 +30,8 @@ class SendApiCompanies:
             self.__data["status"] = "I"
         self.__data["status"] = correlationStatus(self.__data["status"])
         self.__data["taxRegime"] = correlationTaxRegime(self.__data["taxRegime"])
-        self.__data["dddPhone"] = convertToNumber(self.__data["dddPhone"])
-        self.__data["idIbgeCity"] = convertToNumber(self.__data["idIbgeCity"])
+        self.__data["dddPhone"] = treatAsNumber(self.__data["dddPhone"], isInt=True)
+        self.__data["idIbgeCity"] = treatAsNumber(self.__data["idIbgeCity"], isInt=True)
         self.__data["neighborhood"] = ""
         self.__data["street"] = ""
         self.__data["zipCode"] = ""
