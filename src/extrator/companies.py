@@ -47,6 +47,11 @@ class CompaniesExtract:
                     stateRegistration = str(treatAsNumber(companie['stateRegistration']))
                     companie['cityRegistration'] = '' if cityRegistration == '0' else cityRegistration
                     companie['stateRegistration'] = '' if stateRegistration == '0' else stateRegistration
+
+                    if companie["federalRegistration"] == '':
+                        self.__logger.info(f'Warn dont have federalRegistration - {companie["codeCompanieAccountSystem"]} - {companie["name"]} - {companie["federalRegistration"]}')
+                        continue
+
                     await self.__sendApiCompanies.main(companie)
                     self.__logger.info(f'Save success {companie["codeCompanieAccountSystem"]} - {companie["name"]} - {companie["federalRegistration"]}')
                 except RequestException as e:
