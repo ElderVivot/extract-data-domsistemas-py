@@ -26,8 +26,8 @@ class SendApiCompanies:
 
     def __mountData(self) -> Dict[str, Any]:
         self.__data["typeFederalRegistration"] = correlationTypeCgce(self.__data["typeFederalRegistration"])
-        if self.__data["dateFinalAsClient"] is not None and self.__data["status"] != "I":
-            self.__data["status"] = "I"
+        # if self.__data["dateFinalAsClient"] is not None and self.__data["status"] != "I":
+        #     self.__data["status"] = "I"
         self.__data["status"] = correlationStatus(self.__data["status"])
         self.__data["taxRegime"] = correlationTaxRegime(self.__data["taxRegime"])
         self.__data["dddPhone"] = treatAsNumber(self.__data["dddPhone"], isInt=True)
