@@ -1,15 +1,16 @@
 SELECT
     /* quando for fazer filtros lembrar de criar um WHERE generico */
     TD_DADOS.codi_emp,
-    nome_emp = td_dados.nome_emp,
+    /*nome_emp = td_dados.nome_emp,
     cgce = td_dados.cgce,
-    /*mes = td_dados.mes,
-     ano = td_dados.ano,*/
-    vsai = SUM(TD_DADOS.VSAI),
-    vipi = SUM(TD_DADOS.vipi),
-    vst = SUM(TD_DADOS.vst),
-    vser = SUM(TD_DADOS.vser),
-    vout = SUM(TD_DADOS.vout),
+    mes = td_dados.mes,
+    ano = td_dados.ano,*/
+    total_saidas = SUM(TD_DADOS.VSAI),
+    total_ipi = SUM(TD_DADOS.vipi),
+    total_icms_substituicao = SUM(TD_DADOS.vst),
+    total_servicos = SUM(TD_DADOS.vser),
+    total_outros = SUM(TD_DADOS.vout),
+    total_faturamento = total_saidas + total_servicos + total_outros - total_ipi - total_icms_substituicao,
     saldo_imposto = sum(td_dados.saldo_imposto),
     saldo_caixa = sum(td_dados.saldo_caixa),
     entradas = sum(td_dados.entradas),
@@ -1115,9 +1116,8 @@ FROM(
             ANO,
             cgce
     ) AS TD_DADOS
-GROUP BY TD_DADOS.codi_emp,
-    td_dados.nome_emp,
-    td_dados.cgce
-    /*,
+GROUP BY TD_DADOS.codi_emp
+    /*td_dados.nome_emp,
+    td_dados.cgce,
      td_dados.mes,
      td_dados.ano*/

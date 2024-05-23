@@ -1,6 +1,7 @@
 from __future__ import annotations
 import re
-from typing import List, Any, Dict
+import datetime
+from typing import List, Any
 
 
 def correlationTypeCgce(typeCgce: str):
@@ -97,3 +98,60 @@ def returnDataInDictOrArray(data: Any, arrayStructureDataReturn: List[Any], valu
         return dataAccumulated
     except Exception:
         return valueDefault
+
+
+def treatDecimalField(value, numberOfDecimalPlaces=2, decimalSeparator=','):
+    if type(value) == float:
+        return value
+    try:
+        value = str(value)
+        value = re.sub('[^0-9.,-]', '', value)
+        if decimalSeparator == '.' and value.find(',') >= 0 and value.find('.') >= 0:
+            value = value.replace(',', '')
+        elif value.find(',') >= 0 and value.find('.') >= 0:
+            value = value.replace('.', '')
+
+        if value.find(',') >= 0:
+            value = value.replace(',', '.')
+
+        if value.find('.') < 0:
+            value = int(value)
+
+        return float(value)
+    except Exception:
+        return float(0)
+
+
+def treatDateField(valorCampo, formatoData=1):
+    """
+    :param valorCampo: Informar o campo string que será transformado para DATA
+    :param formatoData: 1 = 'DD/MM/YYYY' ; 2 = 'YYYY-MM-DD' ; 3 = 'YYYY/MM/DD' ; 4 = 'DDMMYYYY'
+    :return: retorna como uma data. Caso não seja uma data válida irá retornar None
+    """
+    if type(valorCampo) == 'datetime.date' or type(valorCampo) == 'datetime.datetime':
+        return valorCampo
+
+    if isinstance(valorCampo, datetime.datetime):
+        return valorCampo.date()
+
+    valorCampo = str(valorCampo).strip()
+
+    lengthField = 10  # tamanho padrão da data são 10 caracteres, só muda se não tiver os separados de dia, mês e ano
+
+    if formatoData == 1:
+        formatoDataStr = "%d/%m/%Y"
+    elif formatoData == 2:
+        formatoDataStr = "%Y-%m-%d"
+    elif formatoData == 3:
+        formatoDataStr = "%Y/%m/%d"
+    elif formatoData == 4:
+        formatoDataStr = "%d%m%Y"
+        lengthField = 8
+    elif formatoData == 5:
+        formatoDataStr = "%d/%m/%Y"
+        valorCampo = valorCampo[0:6] + '20' + valorCampo[6:]
+
+    try:
+        return datetime.datetime.strptime(valorCampo[:lengthField], formatoDataStr)
+    except ValueError:
+        return None
