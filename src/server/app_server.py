@@ -17,7 +17,7 @@ from extrator.companies import CompaniesExtract
 from extrator.companies_data import CompaniesDataExtract
 from extrator.companies_data_monthly import CompaniesDataMonthlyExtract
 from extrator.employee import EmployeeExtract
-from extrator.aliquot_effective import AliquotEffectiveExtract
+from extrator.faturamento_fiscal import FaturamentoFiscalExtract
 
 load_dotenv()
 
@@ -64,7 +64,7 @@ async def saveEmployee():
 async def saveAliquotEffective():
     logger.info('Start saveAliquotEffective')
     if len(SQLS_TO_EXECUTE) > 0 and SQLS_TO_EXECUTE.count("aliquot_effective") > 0:
-        await AliquotEffectiveExtract(logger).processAsync()
+        await FaturamentoFiscalExtract(logger).processAsync()
 
 
 if __name__ == "__main__":
