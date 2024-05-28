@@ -22,5 +22,5 @@ FROM bethadba.geempre AS emp
 WHERE emp.stat_emp = 'A'
     AND taxRegime IN ('2', '4')
     AND emp.tins_emp IN (1)
-    /*and emp.codi_emp in (1510)*/
+    /*and emp.codi_emp in (1615)*/
 ORDER BY emp.codi_emp

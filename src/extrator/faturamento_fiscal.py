@@ -94,6 +94,7 @@ class FaturamentoFiscalExtract:
                             "competence": self.__competenceReferenciaAliquotaEnviarProCliente.strftime('%Y-%m-01'),
                             "RBT12": 0,
                             "aliquotTotal": 0,
+                            "qtdAliquotasCalcular": 0,
                             "aliquot1ICMS": 0,
                             "aliquot2ICMS": 0,
                             "aliquot3ICMS": 0,
@@ -119,10 +120,9 @@ class FaturamentoFiscalExtract:
                     anexos = self.__getAnexosAcumuladorNotas(codeCompanie)
 
                     if rbt12 is not None and anexos is not None:
-                        dataToSave[codeCompanie]["RBT12"] = rbt12
-
                         if qtdMesesEntreAberturaEFaturamento < 12:
                             rbt12 = rbt12 / qtdMesesEntreAberturaEFaturamento * 12
+                        dataToSave[codeCompanie]["RBT12"] = rbt12
 
                         anexosSplit = anexos.split(',')
                         for anexo in anexosSplit:
@@ -130,6 +130,14 @@ class FaturamentoFiscalExtract:
                             aliquota_icms = round(returnDataInDictOrArray(result, ['ICMS'], 0), 2)
                             aliquota_iss = round(returnDataInDictOrArray(result, ['ISS'], 0), 2)
                             aliquota_ipi = round(returnDataInDictOrArray(result, ['IPI'], 0), 2)
+                            aliquota_irpj = round(returnDataInDictOrArray(result, ['IRPJ'], 0), 2)
+                            aliquota_csll = round(returnDataInDictOrArray(result, ['CSLL'], 0), 2)
+                            aliquota_pis = round(returnDataInDictOrArray(result, ['PIS/Pasep'], 0), 2)
+                            aliquota_cofins = round(returnDataInDictOrArray(result, ['Cofins'], 0), 2)
+                            aliquota_cpp = round(returnDataInDictOrArray(result, ['CPP'], 0), 2)
+
+                            # print(aliquota_icms, aliquota_iss, aliquota_ipi, aliquota_irpj, aliquota_csll, aliquota_pis, aliquota_cofins, aliquota_cpp, sep=' | ')
+                            dataToSave[codeCompanie]["aliquotTotal"] += aliquota_icms + aliquota_iss + aliquota_ipi + aliquota_irpj + aliquota_csll + aliquota_pis + aliquota_cofins + aliquota_cpp
 
                             if aliquota_iss > 5:
                                 aliquota_iss = 5
@@ -148,6 +156,7 @@ class FaturamentoFiscalExtract:
                             elif anexo == '5':
                                 dataToSave[codeCompanie]["aliquot5ISS"] = aliquota_iss
 
+                        dataToSave[codeCompanie]["aliquotTotal"] = round(dataToSave[codeCompanie]["aliquotTotal"] / len(anexosSplit), 2)
                         await self.__sendToApi.main(dataToSave[codeCompanie])
                 except Exception as e:
                     logger.exception(e)
