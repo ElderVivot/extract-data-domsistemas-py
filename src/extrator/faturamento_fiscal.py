@@ -119,7 +119,7 @@ class FaturamentoFiscalExtract:
                     rbt12 = self.__getFaturamentoFiscal(codeCompanie)
                     anexos = self.__getAnexosAcumuladorNotas(codeCompanie)
 
-                    if rbt12 is not None and anexos is not None:
+                    if rbt12 is not None and rbt12 > 0 and anexos is not None:
                         if qtdMesesEntreAberturaEFaturamento < 12:
                             rbt12 = rbt12 / qtdMesesEntreAberturaEFaturamento * 12
                         dataToSave[codeCompanie]["RBT12"] = rbt12
