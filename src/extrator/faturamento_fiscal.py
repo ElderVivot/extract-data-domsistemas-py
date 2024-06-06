@@ -31,14 +31,28 @@ class FaturamentoFiscalExtract:
     def __init__(self, logger: Logger):
         self.__logger = logger
         self.__today = date.today()
-        self.__competenceReferenciaAliquotaEnviarProCliente = self.__today + relativedelta(months=1)
+        dayToday = self.__today.day
 
-        self.__competenceInicio = self.__today - relativedelta(months=12)
-        self.__competenceInicioStr = self.__competenceInicio.strftime('%Y-%m-01')
+        if dayToday < 25:
+            self.__competenceReferenciaAliquotaEnviarProCliente = self.__today
 
-        self.__competenceFim = self.__today - relativedelta(months=1)
-        ultimoDiaMes = monthrange(self.__competenceFim.year, self.__competenceFim.month)[1]
-        self.__competenceFimStr = self.__competenceFim.strftime(f'%Y-%m-{ultimoDiaMes}')
+            self.__competenceInicio = self.__today - relativedelta(months=13)
+            self.__competenceInicioStr = self.__competenceInicio.strftime('%Y-%m-01')
+
+            self.__competenceFim = self.__today - relativedelta(months=2)
+            ultimoDiaMes = monthrange(self.__competenceFim.year, self.__competenceFim.month)[1]
+            self.__competenceFimStr = self.__competenceFim.strftime(f'%Y-%m-{ultimoDiaMes}')
+        else:
+            self.__competenceReferenciaAliquotaEnviarProCliente = self.__today + relativedelta(months=1)
+
+            self.__competenceInicio = self.__today - relativedelta(months=12)
+            self.__competenceInicioStr = self.__competenceInicio.strftime('%Y-%m-01')
+
+            self.__competenceFim = self.__today - relativedelta(months=1)
+            ultimoDiaMes = monthrange(self.__competenceFim.year, self.__competenceFim.month)[1]
+            self.__competenceFimStr = self.__competenceFim.strftime(f'%Y-%m-{ultimoDiaMes}')
+
+        # print(self.__competenceInicioStr, self.__competenceFimStr, self.__competenceReferenciaAliquotaEnviarProCliente, sep=' | ')
 
         self.__connectionDB = ConnectionDB(self.__logger)
         self.__connection = self.__connectionDB.getConnection()
