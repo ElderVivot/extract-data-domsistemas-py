@@ -32,14 +32,14 @@ class FaturamentoFiscalExtract:
         self.__logger = logger
         self.__today = date.today()
 
-        monthsAddCompetenceReferenciaAliquotaEnviarProCliente = 0 if self.__today.day < 10 else 1
+        monthsAddCompetenceReferenciaAliquotaEnviarProCliente = 0 if self.__today.day < 25 else 1
         self.__competenceReferenciaAliquotaEnviarProCliente = self.__today + relativedelta(months=monthsAddCompetenceReferenciaAliquotaEnviarProCliente)
 
-        monthsSubtriToCompetenceInicio = 13 if self.__today.day < 10 else 12
+        monthsSubtriToCompetenceInicio = 13 if self.__today.day < 25 else 12
         self.__competenceInicio = self.__today - relativedelta(months=monthsSubtriToCompetenceInicio)
         self.__competenceInicioStr = self.__competenceInicio.strftime('%Y-%m-01')
 
-        monthsSubtriToCompetenceFim = 2 if self.__today.day < 10 else 1
+        monthsSubtriToCompetenceFim = 2 if self.__today.day < 25 else 1
         self.__competenceFim = self.__today - relativedelta(months=monthsSubtriToCompetenceFim)
         ultimoDiaMes = monthrange(self.__competenceFim.year, self.__competenceFim.month)[1]
         self.__competenceFimStr = self.__competenceFim.strftime(f'%Y-%m-{ultimoDiaMes}')
