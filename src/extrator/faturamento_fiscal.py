@@ -31,12 +31,16 @@ class FaturamentoFiscalExtract:
     def __init__(self, logger: Logger):
         self.__logger = logger
         self.__today = date.today()
-        self.__competenceReferenciaAliquotaEnviarProCliente = self.__today + relativedelta(months=1)
 
-        self.__competenceInicio = self.__today - relativedelta(months=12)
+        monthsAddCompetenceReferenciaAliquotaEnviarProCliente = 0 if self.__today.day < 10 else 1
+        self.__competenceReferenciaAliquotaEnviarProCliente = self.__today + relativedelta(months=monthsAddCompetenceReferenciaAliquotaEnviarProCliente)
+
+        monthsSubtriToCompetenceInicio = 13 if self.__today.day < 10 else 12
+        self.__competenceInicio = self.__today - relativedelta(months=monthsSubtriToCompetenceInicio)
         self.__competenceInicioStr = self.__competenceInicio.strftime('%Y-%m-01')
 
-        self.__competenceFim = self.__today - relativedelta(months=1)
+        monthsSubtriToCompetenceFim = 2 if self.__today.day < 10 else 1
+        self.__competenceFim = self.__today - relativedelta(months=monthsSubtriToCompetenceFim)
         ultimoDiaMes = monthrange(self.__competenceFim.year, self.__competenceFim.month)[1]
         self.__competenceFimStr = self.__competenceFim.strftime(f'%Y-%m-{ultimoDiaMes}')
 
@@ -81,7 +85,7 @@ class FaturamentoFiscalExtract:
                     dtInicioEmp = treatDateField(f"{dtInicioEmp[:7]}-01", 2)
                     diffDateInicioEmpAndCompetenceFim = relativedelta(treatDateField(f"{self.__competenceFimStr[:7]}-01", 2), dtInicioEmp)
 
-                    print(codeCompanie, nameCompanie, federalRegistration, sep=' | ')
+                    print(codeCompanie, nameCompanie, federalRegistration, self.__competenceInicioStr, self.__competenceFimStr, sep=' | ')
 
                     qtdMesesEntreAberturaEFaturamento = 12
                     if diffDateInicioEmpAndCompetenceFim.months > 0 and diffDateInicioEmpAndCompetenceFim.years == 0:
@@ -122,7 +126,7 @@ class FaturamentoFiscalExtract:
                     if rbt12 is not None and rbt12 > 0 and anexos is not None:
                         if qtdMesesEntreAberturaEFaturamento < 12:
                             rbt12 = rbt12 / qtdMesesEntreAberturaEFaturamento * 12
-                        dataToSave[codeCompanie]["RBT12"] = rbt12
+                        dataToSave[codeCompanie]["RBT12"] = round(rbt12, 2)
 
                         anexosSplit = anexos.split(',')
                         for anexo in anexosSplit:
