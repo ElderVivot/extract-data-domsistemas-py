@@ -31,7 +31,6 @@ class FaturamentoFiscalExtract:
     def __init__(self, logger: Logger):
         self.__logger = logger
         self.__today = date.today()
-<<<<<<< HEAD
 
         monthsAddCompetenceReferenciaAliquotaEnviarProCliente = 0 if self.__today.day < 10 else 1
         self.__competenceReferenciaAliquotaEnviarProCliente = self.__today + relativedelta(months=monthsAddCompetenceReferenciaAliquotaEnviarProCliente)
@@ -44,30 +43,6 @@ class FaturamentoFiscalExtract:
         self.__competenceFim = self.__today - relativedelta(months=monthsSubtriToCompetenceFim)
         ultimoDiaMes = monthrange(self.__competenceFim.year, self.__competenceFim.month)[1]
         self.__competenceFimStr = self.__competenceFim.strftime(f'%Y-%m-{ultimoDiaMes}')
-=======
-        dayToday = self.__today.day
-
-        if dayToday < 25:
-            self.__competenceReferenciaAliquotaEnviarProCliente = self.__today
-
-            self.__competenceInicio = self.__today - relativedelta(months=13)
-            self.__competenceInicioStr = self.__competenceInicio.strftime('%Y-%m-01')
-
-            self.__competenceFim = self.__today - relativedelta(months=2)
-            ultimoDiaMes = monthrange(self.__competenceFim.year, self.__competenceFim.month)[1]
-            self.__competenceFimStr = self.__competenceFim.strftime(f'%Y-%m-{ultimoDiaMes}')
-        else:
-            self.__competenceReferenciaAliquotaEnviarProCliente = self.__today + relativedelta(months=1)
-
-            self.__competenceInicio = self.__today - relativedelta(months=12)
-            self.__competenceInicioStr = self.__competenceInicio.strftime('%Y-%m-01')
-
-            self.__competenceFim = self.__today - relativedelta(months=1)
-            ultimoDiaMes = monthrange(self.__competenceFim.year, self.__competenceFim.month)[1]
-            self.__competenceFimStr = self.__competenceFim.strftime(f'%Y-%m-{ultimoDiaMes}')
-
-        # print(self.__competenceInicioStr, self.__competenceFimStr, self.__competenceReferenciaAliquotaEnviarProCliente, sep=' | ')
->>>>>>> f70db7439e31b457c07a202dc2912e65f58fc801
 
         self.__connectionDB = ConnectionDB(self.__logger)
         self.__connection = self.__connectionDB.getConnection()
