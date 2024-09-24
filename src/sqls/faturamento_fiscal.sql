@@ -1,10 +1,10 @@
 SELECT
     /* quando for fazer filtros lembrar de criar um WHERE generico */
     TD_DADOS.codi_emp,
-    nome_emp = td_dados.nome_emp,
+    /*nome_emp = td_dados.nome_emp,
     cgce = td_dados.cgce,
     mes = td_dados.mes,
-    ano = td_dados.ano,
+    ano = td_dados.ano,*/
     total_saidas = SUM(TD_DADOS.VSAI),
     total_ipi = SUM(TD_DADOS.vipi),
     total_icms_substituicao = SUM(TD_DADOS.vst),
@@ -1214,9 +1214,9 @@ FROM(
             cgce
 
   ) AS TD_DADOS
-GROUP BY TD_DADOS.codi_emp,
+GROUP BY TD_DADOS.codi_emp/*,
     td_dados.nome_emp,
     td_dados.cgce,
      td_dados.mes,
      td_dados.ano
-order by ano, mes
+order by ano, mes*/
