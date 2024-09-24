@@ -1,10 +1,10 @@
 SELECT
     /* quando for fazer filtros lembrar de criar um WHERE generico */
     TD_DADOS.codi_emp,
-    /*nome_emp = td_dados.nome_emp,
+    nome_emp = td_dados.nome_emp,
     cgce = td_dados.cgce,
     mes = td_dados.mes,
-    ano = td_dados.ano,*/
+    ano = td_dados.ano,
     total_saidas = SUM(TD_DADOS.VSAI),
     total_ipi = SUM(TD_DADOS.vipi),
     total_icms_substituicao = SUM(TD_DADOS.vst),
@@ -44,6 +44,8 @@ FROM(
             cgce = geempre.cgce_emp
         FROM BETHADBA.EFSAIDAS AS EFSAIDAS
             INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFSAIDAS.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp
             INNER JOIN BETHADBA.EFPARAMETRO_VIGENCIA AS EFPARAMETRO_VIGENCIA ON EFPARAMETRO_VIGENCIA.CODI_EMP = EFSAIDAS.CODI_EMP
             INNER JOIN BETHADBA.EFACUMULADOR_VIGENCIA AS EFACUMULADOR_VIGENCIA ON EFACUMULADOR_VIGENCIA.CODI_EMP = EFSAIDAS.CODI_EMP
             AND EFACUMULADOR_VIGENCIA.CODI_ACU = EFSAIDAS.CODI_ACU,
@@ -90,6 +92,7 @@ FROM(
         WHERE EFSAIDAS.codi_emp = '#codi_emp#'
             and EFSAIDAS.DSAI_SAI >= DATE('#competence#')
             AND EFSAIDAS.DSAI_SAI <= DATE('#competence_fim#')
+            and ( EFSAIDAS.DSAI_SAI >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFACUMULADOR_VIGENCIA.IFAT_ACU = 'S'
             AND EFSAIDAS.CODI_NAT NOT IN (5933, 6933)
             AND EFSAIDAS.NOVO_ECF = 'N'
@@ -144,6 +147,8 @@ FROM(
             cgce = geempre.cgce_emp
         FROM BETHADBA.EFSAIDAS AS EFSAIDAS
             INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFSAIDAS.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp
             INNER JOIN BETHADBA.EFPARAMETRO_VIGENCIA AS EFPARAMETRO_VIGENCIA ON EFPARAMETRO_VIGENCIA.CODI_EMP = EFSAIDAS.CODI_EMP
             INNER JOIN BETHADBA.EFACUMULADOR_VIGENCIA AS EFACUMULADOR_VIGENCIA ON EFACUMULADOR_VIGENCIA.CODI_EMP = EFSAIDAS.CODI_EMP
             AND EFACUMULADOR_VIGENCIA.CODI_ACU = EFSAIDAS.CODI_ACU
@@ -208,6 +213,7 @@ FROM(
         WHERE EFSAIDAS.codi_emp = '#codi_emp#'
             AND EFSAIDAS.DSAI_SAI >= DATE('#competence#')
             AND EFSAIDAS.DSAI_SAI <= DATE('#competence_fim#')
+            and ( EFSAIDAS.DSAI_SAI >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFACUMULADOR_VIGENCIA.IFAT_ACU = 'S'
             AND EFSAIDAS.CODI_NAT NOT IN (5933, 6933)
             AND EFSAIDAS.NOVO_ECF = 'N'
@@ -259,6 +265,8 @@ FROM(
             INNER JOIN BETHADBA.EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA_DETALHAMENTO AS SITUACAO ON SITUACAO.CODI_EMP = REDUCAO_Z.CODI_EMP
             AND SITUACAO.I_REDUCAO = REDUCAO_Z.I_REDUCAO
             INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = REDUCAO_Z.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp
             INNER JOIN BETHADBA.EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA AS EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA ON EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA.CODI_EMP = SITUACAO.CODI_EMP
             AND EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA.I_REDUCAO = SITUACAO.I_REDUCAO
             AND EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA.I_SITUACAO = SITUACAO.I_SITUACAO,
@@ -270,6 +278,7 @@ FROM(
         WHERE REDUCAO_Z.codi_emp = '#codi_emp#'
             and REDUCAO_Z.DATA_REDUCAO >= DATE('#competence#')
             AND REDUCAO_Z.DATA_REDUCAO <= DATE('#competence_fim#')
+            and ( REDUCAO_Z.DATA_REDUCAO >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA.OPERACAO IN (1, 2, 3, 7)
         GROUP BY TDAUX.MES,
             geempre.codi_emp,
@@ -301,6 +310,8 @@ FROM(
             INNER JOIN BETHADBA.EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA_DETALHAMENTO AS SITUACAO ON SITUACAO.CODI_EMP = REDUCAO_Z.CODI_EMP
             AND SITUACAO.I_REDUCAO = REDUCAO_Z.I_REDUCAO
             INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = REDUCAO_Z.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp
             INNER JOIN BETHADBA.EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA AS EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA ON EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA.CODI_EMP = SITUACAO.CODI_EMP
             AND EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA.I_REDUCAO = SITUACAO.I_REDUCAO
             AND EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA.I_SITUACAO = SITUACAO.I_SITUACAO,
@@ -312,6 +323,7 @@ FROM(
         WHERE REDUCAO_Z.codi_emp = '#codi_emp#'
             and REDUCAO_Z.DATA_REDUCAO >= DATE('#competence#')
             AND REDUCAO_Z.DATA_REDUCAO <= DATE('#competence_fim#')
+            and ( REDUCAO_Z.DATA_REDUCAO >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFECF_REDUCAO_Z_SITUACAO_TRIBUTARIA.OPERACAO IN (8, 9, 10)
         GROUP BY TDAUX.MES,
             geempre.codi_emp,
@@ -340,7 +352,9 @@ FROM(
             ipi = 0,
             cgce = geempre.cgce_emp
         FROM BETHADBA.EFECF_REDUCAO_Z_BILHETE AS REDUCAO_Z_BILHETE
-            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = REDUCAO_Z_BILHETE.CODI_EMP,
+            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = REDUCAO_Z_BILHETE.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp,
             LATERAL(
                 SELECT MONTH(REDUCAO_Z_BILHETE.DATA_REDUCAO) AS MES,
                     YEAR(REDUCAO_Z_BILHETE.DATA_REDUCAO) AS ANO
@@ -349,6 +363,7 @@ FROM(
         WHERE REDUCAO_Z_BILHETE.codi_emp = '#codi_emp#'
             and REDUCAO_Z_BILHETE.DATA_REDUCAO >= DATE('#competence#')
             AND REDUCAO_Z_BILHETE.DATA_REDUCAO <= DATE('#competence_fim#')
+            and ( REDUCAO_Z_BILHETE.DATA_REDUCAO >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
         GROUP BY TDAUX.MES,
             geempre.codi_emp,
             geempre.nome_emp,
@@ -379,6 +394,8 @@ FROM(
             INNER JOIN BETHADBA.EFRESUMO_MOVIMENTO_DIARIO_BILHETE AS RESUMO_BILHETE ON RESUMO.CODI_EMP = RESUMO_BILHETE.CODI_EMP
             AND RESUMO.I_RESUMO = RESUMO_BILHETE.I_RESUMO
             INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = RESUMO_BILHETE.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp
             INNER JOIN BETHADBA.EFACUMULADOR_VIGENCIA AS EFACUMULADOR_VIGENCIA ON EFACUMULADOR_VIGENCIA.CODI_EMP = RESUMO_BILHETE.CODI_EMP
             AND EFACUMULADOR_VIGENCIA.CODI_ACU = RESUMO_BILHETE.CODI_ACU,
             LATERAL(
@@ -389,6 +406,7 @@ FROM(
         WHERE RESUMO.codi_emp = '#codi_emp#'
             and RESUMO.DATA_EMISSAO >= DATE('#competence#')
             AND RESUMO.DATA_EMISSAO <= DATE('#competence_fim#')
+            and ( RESUMO.DATA_EMISSAO >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFACUMULADOR_VIGENCIA.IFAT_ACU = 'S'
             AND RESUMO_BILHETE.CODI_NAT NOT IN(5933, 6933)
             AND EFACUMULADOR_VIGENCIA.VIGENCIA_ACU = (
@@ -426,6 +444,8 @@ FROM(
             cgce = geempre.cgce_emp
         FROM BETHADBA.EFBILHETE_PASSAGEM AS BILHETE
             INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = BILHETE.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp
             INNER JOIN BETHADBA.EFACUMULADOR_VIGENCIA AS EFACUMULADOR_VIGENCIA ON EFACUMULADOR_VIGENCIA.CODI_EMP = BILHETE.CODI_EMP
             AND EFACUMULADOR_VIGENCIA.CODI_ACU = BILHETE.CODI_ACU,
             LATERAL(
@@ -436,6 +456,7 @@ FROM(
         WHERE BILHETE.codi_emp = '#codi_emp#'
             and BILHETE.DATA_EMISSAO >= DATE('#competence#')
             AND BILHETE.DATA_EMISSAO <= DATE('#competence_fim#')
+            and ( BILHETE.DATA_EMISSAO >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFACUMULADOR_VIGENCIA.IFAT_ACU = 'S'
             AND BILHETE.CODI_NAT NOT IN(5933, 6933)
             AND EFACUMULADOR_VIGENCIA.VIGENCIA_ACU = (
@@ -474,7 +495,9 @@ FROM(
         FROM BETHADBA.EFSERVICOS AS EFSERVICOS
             INNER JOIN BETHADBA.EFACUMULADOR_VIGENCIA AS EFACUMULADOR_VIGENCIA ON EFACUMULADOR_VIGENCIA.CODI_EMP = EFSERVICOS.CODI_EMP
             AND EFACUMULADOR_VIGENCIA.CODI_ACU = EFSERVICOS.CODI_ACU
-            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFSERVICOS.CODI_EMP,
+            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFSERVICOS.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp,
             LATERAL(
                 SELECT SUM(A.VLOR_ECA) AS VALOR_CANCELAMENT_DESCONTO
                 FROM BETHADBA.EFTABECFM M,
@@ -507,6 +530,7 @@ FROM(
         WHERE EFSERVICOS.codi_emp = '#codi_emp#'
             and EFSERVICOS.DSER_SER >= DATE('#competence#')
             AND EFSERVICOS.DSER_SER <= DATE('#competence_fim#')
+            and ( EFSERVICOS.DSER_SER >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFACUMULADOR_VIGENCIA.IFAT_ACU = 'S'
             AND EFACUMULADOR_VIGENCIA.VIGENCIA_ACU = (
                 SELECT MAX(vig.VIGENCIA_ACU)
@@ -544,7 +568,9 @@ FROM(
         FROM BETHADBA.EFMOVACU AS EFMOVACU
             INNER JOIN BETHADBA.EFACUMULADOR_VIGENCIA AS EFACUMULADOR_VIGENCIA ON EFACUMULADOR_VIGENCIA.CODI_EMP = EFMOVACU.CODI_EMP
             AND EFACUMULADOR_VIGENCIA.CODI_ACU = EFMOVACU.CODI_ACU
-            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFMOVACU.CODI_EMP,
+            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFMOVACU.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp,
             LATERAL(
                 SELECT MONTH(EFMOVACU.DATA_MAC) AS MES,
                     YEAR(EFMOVACU.DATA_MAC) AS ANO
@@ -553,6 +579,7 @@ FROM(
         WHERE EFMOVACU.codi_emp = '#codi_emp#'
             and EFMOVACU.DATA_MAC >= DATE('#competence#')
             AND EFMOVACU.DATA_MAC <= DATE('#competence_fim#')
+            and ( EFMOVACU.DATA_MAC >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFMOVACU.OPER_MAC IN (1, 2, 6, 9)
             AND EFACUMULADOR_VIGENCIA.IFAT_ACU = 'S'
             AND EFACUMULADOR_VIGENCIA.VIGENCIA_ACU = (
@@ -591,7 +618,9 @@ FROM(
         FROM BETHADBA.EFENTRADAS AS EFENTRADAS
             INNER JOIN BETHADBA.EFACUMULADOR_VIGENCIA AS EFACUMULADOR_VIGENCIA ON EFACUMULADOR_VIGENCIA.CODI_EMP = EFENTRADAS.CODI_EMP
             AND EFACUMULADOR_VIGENCIA.CODI_ACU = EFENTRADAS.CODI_ACU
-            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFENTRADAS.CODI_EMP,
+            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFENTRADAS.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp,
             LATERAL(
                 SELECT SUM(EFIMPENT.VLOR_IEN) AS VALOR_IMPOSTO
                 FROM BETHADBA.EFIMPENT AS EFIMPENT
@@ -614,6 +643,7 @@ FROM(
         WHERE EFENTRADAS.codi_emp = '#codi_emp#'
             and EFENTRADAS.DENT_ENT >= DATE('#competence#')
             AND EFENTRADAS.DENT_ENT <= DATE('#competence_fim#')
+            and ( EFENTRADAS.DENT_ENT >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFENTRADAS.CODI_NAT NOT IN (1933, 2933)
             AND EFACUMULADOR_VIGENCIA.IFAT_ACU = 'S'
             AND EFACUMULADOR_VIGENCIA.IDEV_ACU = 'S'
@@ -653,7 +683,9 @@ FROM(
         FROM BETHADBA.EFMOVACU AS EFMOVACU
             INNER JOIN BETHADBA.EFACUMULADOR_VIGENCIA AS EFACUMULADOR_VIGENCIA ON EFACUMULADOR_VIGENCIA.CODI_EMP = EFMOVACU.CODI_EMP
             AND EFACUMULADOR_VIGENCIA.CODI_ACU = EFMOVACU.CODI_ACU
-            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFMOVACU.CODI_EMP,
+            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFMOVACU.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp,
             LATERAL(
                 SELECT MONTH(EFMOVACU.DATA_MAC) AS MES,
                     YEAR(EFMOVACU.DATA_MAC) AS ANO
@@ -662,6 +694,7 @@ FROM(
         WHERE EFMOVACU.codi_emp = '#codi_emp#'
             and EFMOVACU.DATA_MAC >= DATE('#competence#')
             AND EFMOVACU.DATA_MAC <= DATE('#competence_fim#')
+            and ( EFMOVACU.DATA_MAC >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFMOVACU.OPER_MAC IN (3, 4, 5)
             AND EFACUMULADOR_VIGENCIA.IFAT_ACU = 'S'
             AND EFACUMULADOR_VIGENCIA.VIGENCIA_ACU = (
@@ -700,7 +733,9 @@ FROM(
         FROM BETHADBA.EFSAIDAS AS EFSAIDAS
             INNER JOIN BETHADBA.EFACUMULADOR_VIGENCIA AS EFACUMULADOR_VIGENCIA ON EFACUMULADOR_VIGENCIA.CODI_EMP = EFSAIDAS.CODI_EMP
             AND EFACUMULADOR_VIGENCIA.CODI_ACU = EFSAIDAS.CODI_ACU
-            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFSAIDAS.CODI_EMP,
+            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFSAIDAS.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp,
             LATERAL(
                 SELECT SUM(EFIMPSAI.VLOR_ISA) AS VALOR_IMPOSTO
                 FROM BETHADBA.EFIMPSAI AS EFIMPSAI
@@ -734,6 +769,7 @@ FROM(
         WHERE EFSAIDAS.codi_emp = '#codi_emp#'
             and EFSAIDAS.DSAI_SAI >= DATE('#competence#')
             AND EFSAIDAS.DSAI_SAI <= DATE('#competence_fim#')
+            and ( EFSAIDAS.DSAI_SAI >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFSAIDAS.CODI_NAT IN (5933, 6933)
             AND EFSAIDAS.NOVO_ECF = 'N'
             AND EFACUMULADOR_VIGENCIA.IFAT_ACU = 'S'
@@ -773,7 +809,9 @@ FROM(
         FROM BETHADBA.EFENTRADAS AS EFENTRADAS
             INNER JOIN BETHADBA.EFACUMULADOR_VIGENCIA AS EFACUMULADOR_VIGENCIA ON EFACUMULADOR_VIGENCIA.CODI_EMP = EFENTRADAS.CODI_EMP
             AND EFACUMULADOR_VIGENCIA.CODI_ACU = EFENTRADAS.CODI_ACU
-            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFENTRADAS.CODI_EMP,
+            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFENTRADAS.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp,
             LATERAL(
                 SELECT SUM(EFIMPENT.VLOR_IEN) AS VALOR_IMPOSTO
                 FROM BETHADBA.EFIMPENT AS EFIMPENT
@@ -789,6 +827,7 @@ FROM(
         WHERE EFENTRADAS.codi_emp = '#codi_emp#'
             and EFENTRADAS.DENT_ENT >= DATE('#competence#')
             AND EFENTRADAS.DENT_ENT <= DATE('#competence_fim#')
+            and ( EFENTRADAS.DENT_ENT >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFENTRADAS.CODI_NAT IN (1933, 2933)
             AND EFACUMULADOR_VIGENCIA.IFAT_ACU = 'S'
             AND EFACUMULADOR_VIGENCIA.IDEV_ACU = 'S'
@@ -828,7 +867,9 @@ FROM(
         FROM BETHADBA.EFSAIDAS AS EFSAIDAS
             INNER JOIN BETHADBA.EFACUMULADOR_VIGENCIA AS EFACUMULADOR_VIGENCIA ON EFACUMULADOR_VIGENCIA.CODI_EMP = EFSAIDAS.CODI_EMP
             AND EFACUMULADOR_VIGENCIA.CODI_ACU = EFSAIDAS.CODI_ACU
-            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFSAIDAS.CODI_EMP,
+            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = EFSAIDAS.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp,
             LATERAL(
                 SELECT SUM(EFIMPSAI.VLOR_ISA) AS VALOR_IMPOSTO
                 FROM BETHADBA.EFIMPSAI AS EFIMPSAI
@@ -844,6 +885,7 @@ FROM(
         WHERE EFSAIDAS.codi_emp = '#codi_emp#'
             and EFSAIDAS.DSAI_SAI >= DATE('#competence#')
             AND EFSAIDAS.DSAI_SAI <= DATE('#competence_fim#')
+            and ( EFSAIDAS.DSAI_SAI >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND EFSAIDAS.CODI_NAT IN (5929, 6929)
             AND EFSAIDAS.NOVO_ECF = 'N'
             AND EFACUMULADOR_VIGENCIA.IFAT_ACU = 'N'
@@ -888,7 +930,9 @@ FROM(
             AND CONTRATO_VENDA.I_CONTRATO = PARCELAS.I_CONTRATO
             INNER JOIN BETHADBA.EFEMPREENDIMENTOS_IMOBILIARIOS AS EMPREENDIMENTO ON EMPREENDIMENTO.CODI_EMP = CONTRATO_VENDA.CODI_EMP
             AND EMPREENDIMENTO.I_EMPREENDIMENTO = CONTRATO_VENDA.I_EMPREENDIMENTO
-            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = PAGAMENTOS.CODI_EMP,
+            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = PAGAMENTOS.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp,
             LATERAL(
                 SELECT MONTH(PAGAMENTOS.DATA_PAGAMENTO) AS MES,
                     YEAR(PAGAMENTOS.DATA_PAGAMENTO) AS ANO,
@@ -902,6 +946,7 @@ FROM(
         WHERE PAGAMENTOS.codi_emp = '#codi_emp#'
             and PAGAMENTOS.DATA_PAGAMENTO >= DATE('#competence#')
             AND PAGAMENTOS.DATA_PAGAMENTO <= DATE('#competence_fim#')
+            and ( PAGAMENTOS.DATA_PAGAMENTO >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
         GROUP BY TDAUX.MES,
             GEEMPRE.codi_emp,
             GEEMPRE.nome_emp,
@@ -931,7 +976,9 @@ FROM(
         FROM BETHADBA.EFEMPREENDIMENTOS_IMOBILIARIOS_RESCISAO_CONTRATO AS RESCISAO_CONTRATO
             INNER JOIN BETHADBA.EFEMPREENDIMENTOS_IMOBILIARIOS_RESCISAO_CONTRATO_UNIDADES AS RESCISAO_CONTRATO_UNIDADES ON RESCISAO_CONTRATO_UNIDADES.CODI_EMP = RESCISAO_CONTRATO.CODI_EMP
             AND RESCISAO_CONTRATO_UNIDADES.I_RESCISAO = RESCISAO_CONTRATO.I_RESCISAO
-            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = RESCISAO_CONTRATO.CODI_EMP,
+            INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE ON GEEMPRE.CODI_EMP = RESCISAO_CONTRATO.CODI_EMP
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp,
             LATERAL(
                 SELECT MONTH(RESCISAO_CONTRATO.DATA_DEVOLUCAO) AS MES,
                     YEAR(RESCISAO_CONTRATO.DATA_DEVOLUCAO) AS ANO
@@ -940,6 +987,7 @@ FROM(
         WHERE RESCISAO_CONTRATO.codi_emp = '#codi_emp#'
             and RESCISAO_CONTRATO.DATA_DEVOLUCAO >= DATE('#competence#')
             AND RESCISAO_CONTRATO.DATA_DEVOLUCAO <= DATE('#competence_fim#')
+            and ( RESCISAO_CONTRATO.DATA_DEVOLUCAO >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
         GROUP BY TDAUX.MES,
             GEEMPRE.codi_emp,
             GEEMPRE.nome_emp,
@@ -968,11 +1016,14 @@ FROM(
             ipi = 0,
             cgce = geempre.cgce_emp
         FROM bethadba.geempre AS geempre
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp
             INNER JOIN bethadba.efentradas AS ent ON ent.codi_emp = geempre.codi_emp
             INNER JOIN bethadba.efacumulador_vigencia AS acuvig ON acuvig.codi_emp = ent.codi_emp
             AND acuvig.codi_acu = ent.codi_acu
         WHERE ent.codi_emp = '#codi_emp#'
             and ent.dent_ent BETWEEN DATE('#competence#') AND DATE('#competence_fim#')
+            and ( ent.dent_ent >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND ent.codi_nat NOT IN (1933, 2933)
             AND acuvig.IFAT_ACU <> 'S'
             AND acuvig.IDEV_ACU <> 'S'
@@ -1011,11 +1062,14 @@ FROM(
             ipi = 0,
             cgce = geempre.cgce_emp
         FROM bethadba.geempre AS geempre
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp
             INNER JOIN bethadba.efsaidas AS sai ON sai.codi_emp = geempre.codi_emp
             INNER JOIN bethadba.efacumulador_vigencia AS acuvig ON acuvig.codi_emp = sai.codi_emp
             AND acuvig.codi_acu = sai.codi_acu
         WHERE sai.codi_emp = '#codi_emp#'
             and sai.dsai_sai BETWEEN DATE('#competence#') AND DATE('#competence_fim#')
+            and ( sai.dsai_sai >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND acuvig.IFAT_ACU <> 'S'
             AND acuvig.IDEV_ACU = 'S'
             AND acuvig.VIGENCIA_ACU = (
@@ -1088,6 +1142,8 @@ FROM(
             ),
             cgce = geempre.cgce_emp
         FROM bethadba.geempre AS geempre
+            inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp
             INNER JOIN bethadba.efsdoimp AS simp ON simp.codi_emp = geempre.codi_emp
             INNER JOIN bethadba.geimposto AS imp ON imp.codi_emp = simp.codi_emp
             AND imp.codi_imp = simp.codi_imp
@@ -1095,6 +1151,7 @@ FROM(
             AND impvig.codi_imp = imp.codi_imp
         WHERE simp.codi_emp = '#codi_emp#'
             and simp.data_sim BETWEEN DATE('#competence#') AND DATE('#competence_fim#')
+            and ( simp.data_sim >= par.SIMPLESN_INICIO_SISTEMA_PAR OR par.SIMPLESN_INICIO_SISTEMA_PAR is null )
             AND impvig.vigencia_imp = (
                 SELECT MAX(impvig2.vigencia_imp)
                 FROM bethadba.geimposto_vigencia AS impvig2
@@ -1115,9 +1172,51 @@ FROM(
             GEEMPRE.nome_emp,
             ANO,
             cgce
-    ) AS TD_DADOS
-GROUP BY TD_DADOS.codi_emp
-    /*td_dados.nome_emp,
+        
+        /* receita bruta simples nacional periodo anterior */
+       union all
+
+       SELECT SUM(REC_BRUT_ACUM.valor) AS VSAI,
+		      geempre.codi_emp,
+              GEEMPRE.nome_emp,
+              0 AS VIPI,
+              0 AS VST,
+              0 AS VSER,
+              0 AS VOUT,
+              MONTH(REC_BRUT_ACUM.periodo) AS MES,
+              YEAR(REC_BRUT_ACUM.periodo) AS ANO,
+              saldo_imposto = 0,
+              saldo_caixa = 0,
+              entradas = 0,
+              pis = 0,
+              cofins = 0,
+              csll = 0,
+              irpj = 0,
+              sn = 0,
+              icms = 0,
+              ipi = 0,
+              cgce = geempre.cgce_emp
+
+		FROM bethadba.efsimples_nacional_receita_bruta_anterior AS REC_BRUT_ACUM 
+             INNER JOIN BETHADBA.GEEMPRE AS GEEMPRE
+				     ON REC_BRUT_ACUM.CODI_EMP = GEEMPRE.CODI_EMP
+             inner join bethadba.efparametro as par 
+                  on    par.codi_emp = geempre.codi_emp
+						
+	  WHERE REC_BRUT_ACUM.codi_emp = '#codi_emp#'
+        and REC_BRUT_ACUM.periodo BETWEEN DATE('#competence#') AND DATE('#competence_fim#')
+        and REC_BRUT_ACUM.periodo < par.SIMPLESN_INICIO_SISTEMA_PAR
+            
+	 GROUP BY MES,
+            GEEMPRE.codi_emp,
+            GEEMPRE.nome_emp,
+            ANO,
+            cgce
+
+  ) AS TD_DADOS
+GROUP BY TD_DADOS.codi_emp,
+    td_dados.nome_emp,
     td_dados.cgce,
      td_dados.mes,
-     td_dados.ano*/
+     td_dados.ano
+order by ano, mes
