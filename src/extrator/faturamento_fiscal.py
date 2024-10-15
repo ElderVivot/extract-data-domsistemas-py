@@ -51,16 +51,6 @@ class FaturamentoFiscalExtract:
         self.__calcularAliquotaSimples = CalcularAliquotaAnexosSimples()
         self.__sendToApi = SendApiAliquotEffective()
 
-    def __getAnexosCalculoSimples(self):
-        dictAnexosEmpresasCalculosSimples = {}
-        sqlAnexosCalculosSimples = readSql(os.path.join(folderSrc, "sqls"), "anexos_calculo_simples.sql",
-                                           {"date_filter": self.__competenceReferenciaStr})
-        dfAnexosCalculosSimples = pd.read_sql_query(sqlAnexosCalculosSimples, self.__connection)
-        anexosCalculosSimples = json.loads(dfAnexosCalculosSimples.to_json(orient="records", date_format="iso"))
-        for anexoCalculo in anexosCalculosSimples:
-            dictAnexosEmpresasCalculosSimples[anexoCalculo['codi_emp']] = anexoCalculo['anexos']
-        return dictAnexosEmpresasCalculosSimples
-
     def __getFaturamentoFiscal(self, codeCompanie: str):
         sqlFaturamentoFiscal = readSql(os.path.join(folderSrc, "sqls"), "faturamento_fiscal.sql",
                                        {"codi_emp": codeCompanie, "competence": self.__competenceInicioStr, "competence_fim": self.__competenceFimStr}
@@ -69,6 +59,15 @@ class FaturamentoFiscalExtract:
         faturamentoFiscal = json.loads(dfFaturamentoFiscal.to_json(orient="records", date_format="iso"))
         totalRBT12 = treatDecimalField(returnDataInDictOrArray(faturamentoFiscal, [0, 'total_faturamento'], 0))
         return totalRBT12
+
+    def __getSNReceitaFolha(self, codeCompanie: str):
+        sqlSNReceitaFolha = readSql(os.path.join(folderSrc, "sqls"), "faturamento_fiscal.sql",
+                                    {"codi_emp": codeCompanie, "competence": self.__competenceInicioStr, "competence_fim": self.__competenceFimStr}
+                                    )
+        dfSNReceitaFolha = pd.read_sql_query(sqlSNReceitaFolha, self.__connection)
+        snReceitaFolha = json.loads(dfSNReceitaFolha.to_json(orient="records", date_format="iso"))
+        totalReceitaFolha = treatDecimalField(returnDataInDictOrArray(snReceitaFolha, [0, 'valor'], 0))
+        return totalReceitaFolha
 
     def __getAnexosAcumuladorNotas(self, codeCompanie: str):
         sqlAnexosAcumuladorNota = readSql(os.path.join(folderSrc, "sqls"), "anexos_acumulador_notas.sql",
@@ -88,12 +87,9 @@ class FaturamentoFiscalExtract:
             dfGeempre = pd.read_sql_query(sqlGeempre, self.__connection)
             companies = json.loads(dfGeempre.to_json(orient="records", date_format="iso"))
 
-            anexosCalculosSimples = self.__getAnexosCalculoSimples()
-
             for companie in companies:
                 try:
                     codeCompanie = companie['codeCompanieAccountSystem']
-                    anexoEmpresaCalculoSimples = returnDataInDictOrArray(anexosCalculosSimples, [codeCompanie])
                     nameCompanie = companie['name']
                     federalRegistration = companie['federalRegistration']
                     dtInicioEmp = companie['dtinicio_emp'][:10]
@@ -136,7 +132,13 @@ class FaturamentoFiscalExtract:
                     dataToSave[codeCompanie]['nameEmp'] = nameCompanie
 
                     rbt12 = self.__getFaturamentoFiscal(codeCompanie)
+                    receitaFolha = self.__getSNReceitaFolha(codeCompanie)
                     anexos, anexo_troca_fator_r = self.__getAnexosAcumuladorNotas(codeCompanie)
+
+                    calculoFatorR = receitaFolha / rbt12
+                    isFatorR = False
+                    if calculoFatorR >= 0.28:
+                        isFatorR = True
 
                     if rbt12 is not None and rbt12 > 0 and anexos is not None:
                         if qtdMesesEntreAberturaEFaturamento < 12:
@@ -167,7 +169,7 @@ class FaturamentoFiscalExtract:
                                 dataToSave[codeCompanie]["aliquot2ICMS"] = aliquota_icms
                                 dataToSave[codeCompanie]["aliquot2IPI"] = aliquota_ipi
                             elif anexo == '3':
-                                if anexo_troca_fator_r == 'S' and anexoEmpresaCalculoSimples.find('5') >= 0:
+                                if anexo_troca_fator_r == 'S' and isFatorR is False:
                                     dataToSave[codeCompanie]["aliquot5ISS"] = aliquota_iss
                                 else:
                                     aliquota_iss = 2.01 if aliquota_iss > 0 and aliquota_iss < 2 else aliquota_iss
@@ -176,7 +178,7 @@ class FaturamentoFiscalExtract:
                                 aliquota_iss = 2.00 if aliquota_iss > 0 and aliquota_iss < 2 else aliquota_iss
                                 dataToSave[codeCompanie]["aliquot4ISS"] = aliquota_iss
                             elif anexo == '5':
-                                if anexo_troca_fator_r == 'S' and anexoEmpresaCalculoSimples.find('3') >= 0:
+                                if anexo_troca_fator_r == 'S' and isFatorR is True:
                                     aliquota_iss = 2.01 if aliquota_iss > 0 and aliquota_iss < 2 else aliquota_iss
                                     dataToSave[codeCompanie]["aliquot3ISS"] = aliquota_iss
                                 else:
