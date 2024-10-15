@@ -34,6 +34,7 @@ class FaturamentoFiscalExtract:
 
         monthsAddCompetenceReferenciaAliquotaEnviarProCliente = 0 if self.__today.day < 25 else 1
         self.__competenceReferenciaAliquotaEnviarProCliente = self.__today + relativedelta(months=monthsAddCompetenceReferenciaAliquotaEnviarProCliente)
+        self.__competenceReferenciaStr = self.__competenceReferenciaAliquotaEnviarProCliente.strftime('%Y-%m-01')
 
         monthsSubtriToCompetenceInicio = 13 if self.__today.day < 25 else 12
         self.__competenceInicio = self.__today - relativedelta(months=monthsSubtriToCompetenceInicio)
@@ -49,6 +50,16 @@ class FaturamentoFiscalExtract:
 
         self.__calcularAliquotaSimples = CalcularAliquotaAnexosSimples()
         self.__sendToApi = SendApiAliquotEffective()
+
+    def __getAnexosCalculoSimples(self):
+        dictAnexosEmpresasCalculosSimples = {}
+        sqlAnexosCalculosSimples = readSql(os.path.join(folderSrc, "sqls"), "anexos_calculo_simples.sql",
+                                           {"date_filter": self.__competenceReferenciaStr})
+        dfAnexosCalculosSimples = pd.read_sql_query(sqlAnexosCalculosSimples, self.__connection)
+        anexosCalculosSimples = json.loads(dfAnexosCalculosSimples.to_json(orient="records", date_format="iso"))
+        for anexoCalculo in anexosCalculosSimples:
+            dictAnexosEmpresasCalculosSimples[anexoCalculo['codi_emp']] = anexoCalculo['anexos']
+        return dictAnexosEmpresasCalculosSimples
 
     def __getFaturamentoFiscal(self, codeCompanie: str):
         sqlFaturamentoFiscal = readSql(os.path.join(folderSrc, "sqls"), "faturamento_fiscal.sql",
@@ -66,7 +77,8 @@ class FaturamentoFiscalExtract:
         dfAnexosAcumuladorNota = pd.read_sql_query(sqlAnexosAcumuladorNota, self.__connection)
         anexosAcumuladorNota = json.loads(dfAnexosAcumuladorNota.to_json(orient="records", date_format="iso"))
         anexos = returnDataInDictOrArray(anexosAcumuladorNota, [0, 'anexos'], '')
-        return anexos
+        anexo_troca_fator_r = returnDataInDictOrArray(anexosAcumuladorNota, [0, 'anexo_troca_fator_r'], '')
+        return anexos, anexo_troca_fator_r
 
     async def processAsync(self):
         try:
@@ -76,9 +88,12 @@ class FaturamentoFiscalExtract:
             dfGeempre = pd.read_sql_query(sqlGeempre, self.__connection)
             companies = json.loads(dfGeempre.to_json(orient="records", date_format="iso"))
 
+            anexosCalculosSimples = self.__getAnexosCalculoSimples()
+
             for companie in companies:
                 try:
                     codeCompanie = companie['codeCompanieAccountSystem']
+                    anexoEmpresaCalculoSimples = returnDataInDictOrArray(anexosCalculosSimples, [codeCompanie])
                     nameCompanie = companie['name']
                     federalRegistration = companie['federalRegistration']
                     dtInicioEmp = companie['dtinicio_emp'][:10]
@@ -121,7 +136,7 @@ class FaturamentoFiscalExtract:
                     dataToSave[codeCompanie]['nameEmp'] = nameCompanie
 
                     rbt12 = self.__getFaturamentoFiscal(codeCompanie)
-                    anexos = self.__getAnexosAcumuladorNotas(codeCompanie)
+                    anexos, anexo_troca_fator_r = self.__getAnexosAcumuladorNotas(codeCompanie)
 
                     if rbt12 is not None and rbt12 > 0 and anexos is not None:
                         if qtdMesesEntreAberturaEFaturamento < 12:
@@ -152,13 +167,20 @@ class FaturamentoFiscalExtract:
                                 dataToSave[codeCompanie]["aliquot2ICMS"] = aliquota_icms
                                 dataToSave[codeCompanie]["aliquot2IPI"] = aliquota_ipi
                             elif anexo == '3':
-                                aliquota_iss = 2.01 if aliquota_iss > 0 and aliquota_iss < 2 else aliquota_iss
-                                dataToSave[codeCompanie]["aliquot3ISS"] = aliquota_iss
+                                if anexo_troca_fator_r == 'S' and anexoEmpresaCalculoSimples.find('5') >= 0:
+                                    dataToSave[codeCompanie]["aliquot5ISS"] = aliquota_iss
+                                else:
+                                    aliquota_iss = 2.01 if aliquota_iss > 0 and aliquota_iss < 2 else aliquota_iss
+                                    dataToSave[codeCompanie]["aliquot3ISS"] = aliquota_iss
                             elif anexo == '4':
                                 aliquota_iss = 2.00 if aliquota_iss > 0 and aliquota_iss < 2 else aliquota_iss
                                 dataToSave[codeCompanie]["aliquot4ISS"] = aliquota_iss
                             elif anexo == '5':
-                                dataToSave[codeCompanie]["aliquot5ISS"] = aliquota_iss
+                                if anexo_troca_fator_r == 'S' and anexoEmpresaCalculoSimples.find('3') >= 0:
+                                    aliquota_iss = 2.01 if aliquota_iss > 0 and aliquota_iss < 2 else aliquota_iss
+                                    dataToSave[codeCompanie]["aliquot3ISS"] = aliquota_iss
+                                else:
+                                    dataToSave[codeCompanie]["aliquot5ISS"] = aliquota_iss
 
                         dataToSave[codeCompanie]["aliquotTotal"] = round(dataToSave[codeCompanie]["aliquotTotal"] / len(anexosSplit), 2)
                         await self.__sendToApi.main(dataToSave[codeCompanie])
