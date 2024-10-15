@@ -61,7 +61,7 @@ class FaturamentoFiscalExtract:
         return totalRBT12
 
     def __getSNReceitaFolha(self, codeCompanie: str):
-        sqlSNReceitaFolha = readSql(os.path.join(folderSrc, "sqls"), "faturamento_fiscal.sql",
+        sqlSNReceitaFolha = readSql(os.path.join(folderSrc, "sqls"), "sn_receita_folha.sql",
                                     {"codi_emp": codeCompanie, "competence": self.__competenceInicioStr, "competence_fim": self.__competenceFimStr}
                                     )
         dfSNReceitaFolha = pd.read_sql_query(sqlSNReceitaFolha, self.__connection)
