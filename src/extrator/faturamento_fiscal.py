@@ -147,6 +147,11 @@ class FaturamentoFiscalExtract:
 
                         anexosSplit = anexos.split(',')
                         for anexo in anexosSplit:
+                            if anexo == '3' and anexo_troca_fator_r == 'S' and isFatorR is False:
+                                anexo = '5'
+                            if anexo == '5' and anexo_troca_fator_r == 'S' and isFatorR is True:
+                                anexo = '3'
+
                             result = self.__calcularAliquotaSimples.reparticaoImpostos(rbt12, anexo)
                             aliquota_icms = round(returnDataInDictOrArray(result, ['ICMS'], 0), 2)
                             aliquota_iss = round(returnDataInDictOrArray(result, ['ISS'], 0), 2)
@@ -169,20 +174,13 @@ class FaturamentoFiscalExtract:
                                 dataToSave[codeCompanie]["aliquot2ICMS"] = aliquota_icms
                                 dataToSave[codeCompanie]["aliquot2IPI"] = aliquota_ipi
                             elif anexo == '3':
-                                if anexo_troca_fator_r == 'S' and isFatorR is False:
-                                    dataToSave[codeCompanie]["aliquot5ISS"] = aliquota_iss
-                                else:
-                                    aliquota_iss = 2.01 if aliquota_iss > 0 and aliquota_iss < 2 else aliquota_iss
-                                    dataToSave[codeCompanie]["aliquot3ISS"] = aliquota_iss
+                                aliquota_iss = 2.01 if aliquota_iss > 0 and aliquota_iss < 2 else aliquota_iss
+                                dataToSave[codeCompanie]["aliquot3ISS"] = aliquota_iss
                             elif anexo == '4':
                                 aliquota_iss = 2.00 if aliquota_iss > 0 and aliquota_iss < 2 else aliquota_iss
                                 dataToSave[codeCompanie]["aliquot4ISS"] = aliquota_iss
                             elif anexo == '5':
-                                if anexo_troca_fator_r == 'S' and isFatorR is True:
-                                    aliquota_iss = 2.01 if aliquota_iss > 0 and aliquota_iss < 2 else aliquota_iss
-                                    dataToSave[codeCompanie]["aliquot3ISS"] = aliquota_iss
-                                else:
-                                    dataToSave[codeCompanie]["aliquot5ISS"] = aliquota_iss
+                                dataToSave[codeCompanie]["aliquot5ISS"] = aliquota_iss
 
                         dataToSave[codeCompanie]["aliquotTotal"] = round(dataToSave[codeCompanie]["aliquotTotal"] / len(anexosSplit), 2)
                         await self.__sendToApi.main(dataToSave[codeCompanie])
